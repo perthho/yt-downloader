@@ -27,45 +27,37 @@ app.config['MAX_CONTENT_LENGTH'] = int(os.environ.get('MAX_CONTENT_LENGTH', 5000
 # Create downloads folder if it doesn't exist
 Path(app.config['UPLOAD_FOLDER']).mkdir(parents=True, exist_ok=True)
 
-# Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-# Store download progress
-download_progress = {}
+logger = logging.getLogger(__name__)
 
 def get_ydl_opts_base():
     """
     Get base yt-dlp options optimized for production deployment.
-    Based on official yt-dlp recommendations - works WITHOUT browser cookies.
+    Enhanced configuration to bypass YouTube's aggressive bot detection on servers.
     """
     return {
         # Extractor arguments - THE KEY TO BYPASSING BOT DETECTION
-        # Using multiple player clients provides fallback options
         'extractor_args': {
             'youtube': {
-                # Try these clients in order: android, ios, web
-                # Android client is most reliable for avoiding bot detection
-                'player_client': ['android', 'ios', 'web'],
-                
-                # Skip unnecessary extraction steps for better performance
-                'player_skip': ['webpage', 'configs'],
-                
-                # Use mobile API which has fewer restrictions
+                # android_creator is most reliable, then android, ios, mweb, web
+                'player_client': ['android_creator', 'android', 'ios', 'mweb', 'web'],
+                # Skip unnecessary extraction steps
+                'player_skip': ['webpage', 'configs', 'js'],
+                # Use mobile API
                 'skip': ['hls', 'dash'],
             }
         },
-        
         # Additional options to avoid detection
         'nocheckcertificate': True,
         'no_warnings': True,
         'ignoreerrors': False,
+        # Android app headers to appear as legitimate client
+        'http_headers': {
+            'User-Agent': 'com.google.android.youtube/19.09.37 (Linux; U; Android 11) gzip',
+            'Accept-Language': 'en-US,en;q=0.9',
+        }
     }
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
 
 @app.route('/images/<path:filename>')
 def serve_images(filename):
@@ -73,6 +65,10 @@ def serve_images(filename):
     # referencing `/images/...` work without moving files into `static/`.
     images_dir = os.path.join(app.root_path, 'images')
     return send_from_directory(images_dir, filename)
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 @app.route('/api/search-resolutions', methods=['POST'])
 def search_resolutions():

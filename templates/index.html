@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YouTube Video Downloader</title>
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap"
+        rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -84,6 +86,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -184,6 +187,7 @@
                 opacity: 0;
                 transform: translateY(-10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -408,8 +412,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         /* Info Section */
@@ -473,10 +482,11 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Header Navigation -->
     <div class="header-nav">
-        <img src="/images/favicon.ico" alt="favicon" height="30px" > 
+        <img src="/images/favicon.ico" alt="favicon" height="30px">
         <div class="logo">down2load</div>
     </div>
 
@@ -491,16 +501,15 @@
             <form id="downloaderForm">
                 <div class="input-wrapper">
                     <div class="input-with-icon">
-                        <input 
-                            type="url" 
-                            id="url" 
-                            placeholder="Search keywords or paste video link here" 
-                            required
-                            autocomplete="off"
-                        >
-                        <button type="button" id="pasteBtn" class="paste-btn" title="Paste from clipboard" aria-label="Paste from clipboard">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                        <input type="url" id="url" placeholder="Search keywords or paste video link here" required
+                            autocomplete="off">
+                        <button type="button" id="pasteBtn" class="paste-btn" title="Paste from clipboard"
+                            aria-label="Paste from clipboard">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2">
+                                </path>
                                 <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
                             </svg>
                         </button>
@@ -562,17 +571,29 @@
     <div class="info-section">
         <div class="info-content">
             <p>
-                YouTube is the biggest YouTube video sharing platform in the world, and provide an excellent experience for user to upload, view, 
-                and share videos. What it can't provide is a YouTube video download. That is why yt1d is here to help you out!
+                Looking for a fast and free YouTube video downloader? down2load is your ultimate solution to download
+                YouTube videos,
+                Shorts, and music in seconds. Whether you need MP4 video files in HD, Full HD, or 4K quality, or want to
+                convert YouTube
+                to MP3 audio format, our online YouTube downloader makes it effortless. No registration required – just
+                paste the video
+                link and download instantly!
             </p>
             <p>
-                With our YouTube video downloader, you can search for and download videos, Shorts, and music tracks directly from YouTube – all 
-                for free! Choose from resolutions up to 4K or convert videos to audio formats with a single click, ensuring seamless saving and 
-                sharing. Ready to try? Paste your video link and start downloading instantly! updated ver 3.
+                Our YouTube video download tool supports all formats and resolutions, from 144p to 4K Ultra HD. Download
+                YouTube videos
+                to MP4 for offline viewing, or extract audio as MP3 files for your music library. Compatible with
+                YouTube Shorts, music
+                videos, tutorials, vlogs, and more. down2load works on any device – desktop, mobile, or tablet.
+                Experience the fastest
+                YouTube downloader online with no software installation needed. Start downloading your favorite YouTube
+                content now –
+                100% free, safe, and unlimited downloads! eeeeeee
             </p>
         </div>
     </div>
 
- <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
+
 </html>
