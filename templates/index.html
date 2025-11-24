@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Downloader</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', 'Segoe UI Variable', Roboto, "Helvetica Neue", Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background: linear-gradient(135deg, #b1d1b3 0%, #b1d1b3 100%);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header-nav {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 40px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            padding-left: 10px;
+            color: #111;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 15px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #2fa006;
+        }
+
+        .language-selector {
+            color: #333;
+            font-weight: 500;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            padding: 60px 20px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 50px 60px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-card h1 {
+            color: #157300;
+            font-size: 42px;
+            font-weight: 900;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+
+        .hero-card .subtitle {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 35px;
+        }
+
+        /* Input Section */
+        .input-wrapper {
+            max-width: 750px;
+            margin: 0 auto 15px;
+        }
+
+        .input-with-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-with-icon input {
+            width: 100%;
+            padding: 16px 50px 16px 20px;
+            border: 2px solid #83c465;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s;
+            font-family: "Inter", 'Segoe UI', 'Segoe UI Variable', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .input-with-icon input:focus {
+            outline: none;
+            border-color: #75ea66;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-with-icon input::placeholder {
+            color: #999;
+        }
+
+        .paste-btn {
+            position: absolute;
+            right: 10px;
+            border: none;
+            background: transparent;
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background 0.15s ease;
+            padding: 4px;
+            color: #47d400;
+        }
+
+        .paste-btn:hover {
+            background: rgba(0, 120, 212, 0.08);
+        }
+
+        .copyright-notice {
+            color: #888;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        /* Message */
+        .message {
+            padding: 14px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: none;
+            font-size: 14px;
+            animation: slideDown 0.3s ease-out;
+            max-width: 750px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        /* Video Info */
+        .video-info {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin: 25px auto;
+            display: none;
+            border-left: 4px solid #87ea66;
+            max-width: 750px;
+        }
+
+        .video-info.loading {
+            display: flex !important;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .video-info-content {
+            display: flex !important;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .video-thumbnail {
+            width: 250px;
+            min-width: 250px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-details {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .video-info h3 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .video-info p {
+            color: #666;
+            font-size: 18px;
+            font-weight: bold;
+            line-height: 1.6;
+            word-break: break-word;
+            margin-bottom: 10px;
+        }
+
+        .file-size {
+            color: #999;
+            font-size: 13px;
+        }
+
+        /* Download Options */
+        .download-options {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.5s ease, opacity 0.5s ease, margin 0.5s ease;
+            margin: 0 auto;
+            max-width: 750px;
+        }
+
+        .download-options.show {
+            max-height: 1000px;
+            opacity: 1;
+            margin: 25px auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-family: "Inter", 'Segoe UI', 'Segoe UI Variable', Tahoma, Geneva, Verdana, sans-serif;
+            background: white;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .resolution-group.hidden {
+            display: none;
+        }
+
+        /* Progress */
+        .progress-container {
+            display: none;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s;
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #666;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .progress-percent {
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        /* Button */
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: linear-gradient(135deg, #2fa006 0%, #2fff01 100%);
+            color: white;
+            font-family: "Inter", 'Segoe UI', 'Segoe UI Variable', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(47, 160, 6, 0.4);
+        }
+
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Info Section */
+        .info-section {
+            background: #f5f5f5;
+            padding: 60px 40px;
+            margin-top: 60px;
+        }
+
+        .info-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            color: #333;
+        }
+
+        .info-content p {
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-nav {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+
+            .hero-card {
+                padding: 35px 25px;
+            }
+
+            .hero-card h1 {
+                font-size: 32px;
+            }
+
+            .row {
+                grid-template-columns: 1fr;
+            }
+
+            .video-info-content {
+                flex-direction: column !important;
+            }
+
+            .video-thumbnail {
+                width: 100%;
+                min-width: unset;
+            }
+
+            .info-section {
+                padding: 40px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <div class="header-nav">
+        <img src="/images/favicon.ico" alt="favicon" height="30px" > 
+        <div class="logo">down2load</div>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="hero-card">
+            <h1><span style="color: black;">YouTube</span> Video-Audio Downloader</h1>
+            <p class="subtitle">download YouTube videos and audio for free</p>
+
+            <div id="message" class="message"></div>
+
+            <form id="downloaderForm">
+                <div class="input-wrapper">
+                    <div class="input-with-icon">
+                        <input 
+                            type="url" 
+                            id="url" 
+                            placeholder="Paste your Video/Audio link here" 
+                            required
+                            autocomplete="off"
+                        >
+                        <button type="button" id="pasteBtn" class="paste-btn" title="Paste from clipboard" aria-label="Paste from clipboard">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+
+                <div id="videoInfo" class="video-info">
+                    <div id="videoLoading" style="text-align: center;">
+                        <span class="loading"></span>
+                    </div>
+                    <div id="videoContent" class="video-info-content" style="display: none;">
+                        <img id="videoThumbnail" class="video-thumbnail" src="" alt="Video thumbnail">
+                        <div class="video-details">
+                            <h3></h3>
+                            <p id="videoTitle"></p>
+                            <div class="file-size" id="videoDuration"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="downloadOptions" class="download-options">
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="type">Type</label>
+                            <select id="type" required>
+                                <option value="Video">📹 Video (MP4)</option>
+                                <option value="Audio">🎵 Audio (MP3)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group resolution-group">
+                            <label for="resolution">Resolution</label>
+                            <select id="resolution" required>
+                                <option value="">Loading...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="progressContainer" class="progress-container">
+                        <div class="progress-bar">
+                            <div id="progressFill" class="progress-fill"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span id="progressLabel">Preparing download...</span>
+                            <span id="progressPercent" class="progress-percent">0%</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="downloadBtn" class="btn-primary">
+                        Download
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Info Section -->
+    <div class="info-section">
+        <div class="info-content">
+            <p>
+                YouTube is the biggest YouTube video sharing platform in the world, and provide an excellent experience for user to upload, view, 
+                and share videos. What it can't provide is a YouTube video download. That is why yt1d is here to help you out!
+            </p>
+            <p>
+                With our YouTube video downloader, you can search for and download videos, Shorts, and music tracks directly from YouTube – all 
+                for free! Choose from resolutions up to 4K or convert videos to audio formats with a single click, ensuring seamless saving and 
+                sharing. Ready to try? Paste your video link and start downloading instantly!
+            </p>
+        </div>
+    </div>
+
+ <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
