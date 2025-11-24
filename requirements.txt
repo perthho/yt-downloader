@@ -1,3 +1,7 @@
 Flask==3.0.0
 yt-dlp
 gunicorn==21.2.0
+# Optional / recommended for deployments and local env handling
+python-dotenv
+# On Windows hosts use `waitress`; on Linux use `gunicorn` (already listed)
+waitress

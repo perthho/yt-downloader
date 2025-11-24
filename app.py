@@ -7,11 +7,22 @@ import logging
 from pathlib import Path
 import json
 
+# Load environment variables from a .env file in development
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except Exception:
+    # dotenv is optional; production environments typically set real env vars
+    pass
+
 app = Flask(__name__)
 
 # Configuration
-app.config['UPLOAD_FOLDER'] = os.path.join(os.path.expanduser('~'), 'Downloads', 'YouTube_Downloads')
-app.config['MAX_CONTENT_LENGTH'] = 5000 * 1024 * 1024  # 5GB max
+# Use environment variable `UPLOAD_FOLDER` in production; fallback to a sensible default for local dev
+default_upload = os.path.join(os.path.expanduser('~'), 'Downloads', 'YouTube_Downloads')
+app.config['UPLOAD_FOLDER'] = os.environ.get('UPLOAD_FOLDER', default_upload)
+# Max upload / download size (bytes)
+app.config['MAX_CONTENT_LENGTH'] = int(os.environ.get('MAX_CONTENT_LENGTH', 5000 * 1024 * 1024))  # default 5GB
 
 # Create downloads folder if it doesn't exist
 Path(app.config['UPLOAD_FOLDER']).mkdir(parents=True, exist_ok=True)
