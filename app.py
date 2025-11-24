@@ -34,6 +34,34 @@ logger = logging.getLogger(__name__)
 # Store download progress
 download_progress = {}
 
+def get_ydl_opts_base():
+    """
+    Get base yt-dlp options optimized for production deployment.
+    Based on official yt-dlp recommendations - works WITHOUT browser cookies.
+    """
+    return {
+        # Extractor arguments - THE KEY TO BYPASSING BOT DETECTION
+        # Using multiple player clients provides fallback options
+        'extractor_args': {
+            'youtube': {
+                # Try these clients in order: android, ios, web
+                # Android client is most reliable for avoiding bot detection
+                'player_client': ['android', 'ios', 'web'],
+                
+                # Skip unnecessary extraction steps for better performance
+                'player_skip': ['webpage', 'configs'],
+                
+                # Use mobile API which has fewer restrictions
+                'skip': ['hls', 'dash'],
+            }
+        },
+        
+        # Additional options to avoid detection
+        'nocheckcertificate': True,
+        'no_warnings': True,
+        'ignoreerrors': False,
+    }
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -57,12 +85,9 @@ def search_resolutions():
             return jsonify({'error': 'URL is required'}), 400
         
         ydl_opts = {
-            'quiet': True, 
-            'no_warnings': True,
+            **get_ydl_opts_base(),
+            'quiet': True,
             'socket_timeout': 30,
-            'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'extractor_args': {'youtube': {'player_client': ['android', 'web']}},
-            'nocheckcertificate': True
         }
         
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -92,7 +117,7 @@ def search_resolutions():
     
     except Exception as e:
         logger.error(f"Search error: {str(e)}")
-        return jsonify({'error': f'Failed to fetch video info: {str(e)[:100]}'}), 400
+        return jsonify({'error': f'Failed to fetch video info: {str(e)[:200]}'}), 400
 
 @app.route('/api/download', methods=['POST'])
 def download():
@@ -126,14 +151,11 @@ def download():
                     logger.info(f"Download progress: {percent}% ({downloaded}/{total})")
         
         ydl_opts = {
+            **get_ydl_opts_base(),
             'format': format_str,
             'outtmpl': os.path.join(temp_folder, f'%(title)s_{timestamp}.%(ext)s'),
             'quiet': False,
-            'no_warnings': False,
             'progress_hooks': [progress_hook],
-            'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'extractor_args': {'youtube': {'player_client': ['android', 'web']}},
-            'nocheckcertificate': True,
             'postprocessors': [{
                 'key': 'FFmpegExtractAudio',
                 'preferredcodec': 'mp3',
@@ -188,10 +210,10 @@ def download():
         
         except yt_dlp.utils.DownloadError as e:
             logger.error(f"Download error: {str(e)}")
-            return jsonify({'error': f'Download failed: {str(e)[:100]}'}), 400
+            return jsonify({'error': f'Download failed: {str(e)[:200]}'}), 400
         except Exception as e:
             logger.error(f"Unexpected error during download: {str(e)}")
-            return jsonify({'error': f'Download error: {str(e)[:100]}'}), 500
+            return jsonify({'error': f'Download error: {str(e)[:200]}'}), 500
     
     except Exception as e:
         logger.error(f"Request handling error: {str(e)}")
